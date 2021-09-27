@@ -75,6 +75,8 @@ export default class Conversion {
      */
     public readonly _migrateOnlyData: boolean;
 
+    public readonly _migrateOnlySchema: boolean;
+
     /**
      * A path to the "logs_directory".
      */
@@ -202,6 +204,17 @@ export default class Conversion {
     public readonly _streamsHighWaterMark: number;
 
     /**
+     * List with index names and columns for partial indexes
+     * Example: {"table1_index_name": ("column_name": size), "table2_index_name": ("column1": 100, "column2": 50)}
+     */
+    public readonly _partialIndexes: any;
+
+    /**
+     * Sql list to run after migration is complete
+     */
+    public readonly _after_migrate_sqls: string[];
+
+    /**
      * Constructor.
      */
     public constructor(config: any) {
@@ -244,9 +257,12 @@ export default class Conversion {
         this._loaderMaxOldSpaceSize = this._config.loader_max_old_space_size;
         this._loaderMaxOldSpaceSize = Conversion._isIntNumeric(this._loaderMaxOldSpaceSize) ? this._loaderMaxOldSpaceSize : 'DEFAULT';
         this._migrateOnlyData = this._config.migrate_only_data === undefined ? false : this._config.migrate_only_data;
+        this._migrateOnlySchema = this._config.migrate_only_schema === undefined ? false : this._config.migrate_only_schema;
         this._delimiter = this._config.delimiter !== undefined && this._config.delimiter.length === 1
             ? this._config.delimiter
             : ',';
+        this._partialIndexes = this._config.partial_indexes === undefined ? null : this._config.partial_indexes;
+        this._after_migrate_sqls = this._config.after_migrate_sqls === undefined ? [] : this._config.after_migrate_sqls;
     }
 
     /**

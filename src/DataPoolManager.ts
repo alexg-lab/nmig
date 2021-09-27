@@ -77,6 +77,10 @@ export const dropDataPoolTable = async (conversion: Conversion): Promise<Convers
  * Reads temporary table, and generates Data-pool.
  */
 export const readDataPool = async (conversion: Conversion): Promise<Conversion> => {
+    if (conversion._migrateOnlySchema) {
+        return conversion;
+    }
+
     const logTitle: string = 'DataPoolManager::readDataPool';
     const table: string = getDataPoolTableName(conversion);
     const params: IDBAccessQueryParams = {

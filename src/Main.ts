@@ -31,6 +31,7 @@ import { getConfAndLogsPaths, boot } from './BootProcessor';
 import { createStateLogsTable, dropStateLogsTable } from './MigrationStateManager';
 import { createDataPoolTable, readDataPool } from './DataPoolManager';
 import { readConfig, readExtraConfig, createLogsDirectory, readDataAndIndexTypesMap } from './FsOps';
+import { afterMigrate } from "./AfterMigrate";
 
 const { confPath, logsPath } = getConfAndLogsPaths();
 
@@ -50,5 +51,6 @@ readConfig(confPath, logsPath)
     .then(processConstraints)
     .then(dropDataPoolTable)
     .then(dropStateLogsTable)
+    .then(afterMigrate)
     .then(DBAccess.closeConnectionPools)
     .then(generateReport);

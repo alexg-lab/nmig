@@ -87,6 +87,12 @@
     ],
     "migrate_only_data" : false,
 
+    "migrate_only_schema_description" : [
+        "In order to skip data migration, and migrate only schema",
+        " - set this parameter true."
+    ],
+    "migrate_only_schema" : false,
+
     "delimiter_description" : [
         "Specifies the character, that separates columns within each record.",
         "This must be a single one-byte character.",
@@ -98,5 +104,19 @@
         "In order to enable the additional configuration options, placed at extra_config.json",
         " - set this parameter true."
     ],
-    "enable_extra_config" : false
+    "enable_extra_config" : false,
+
+    "partial_indexes_description" : [
+        "Specifies the list of partial indexes to convert mysql mysql_some_index_name(column1, column2(100), column3), to postgree : idx_name(column1, left(column2, 100), column3).",
+        "You must specify a table name and only fields for the partial index, you do not need to list all fields of the composite index",
+        "Example: \"partial_indexes\": {\"settings_key_value_idx\": {\"key\", \"value\": 50}, {\"mysql_some_index_name\": {\"column2\": 100}}}"
+    ],
+    "partial_indexes" : {
+    },
+
+    "after_migrate_sqls_description" : [
+        "Specify the list of sql to run after the migration is complete"
+    ],
+    "after_migrate_sqls": [
+    ]
 }
