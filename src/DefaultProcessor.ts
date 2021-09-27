@@ -50,7 +50,18 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
         'null': 'NULL',
         'UTC_DATE': "(CURRENT_DATE AT TIME ZONE 'UTC')",
         'UTC_TIME': "(CURRENT_TIME AT TIME ZONE 'UTC')",
-        'UTC_TIMESTAMP': "(NOW() AT TIME ZONE 'UTC')"
+        'UTC_TIMESTAMP': "(NOW() AT TIME ZONE 'UTC')",
+
+        'CURRENT_DATE()': 'CURRENT_DATE',
+        'CURRENT_TIME()': 'CURRENT_TIME',
+        'CURRENT_TIMESTAMP()': 'CURRENT_TIMESTAMP',
+        'LOCALTIME()': 'LOCALTIME',
+        'LOCALTIMESTAMP()': 'LOCALTIMESTAMP',
+        'UTC_DATE()': "(CURRENT_DATE AT TIME ZONE 'UTC')",
+        'UTC_TIME()': "(CURRENT_TIME AT TIME ZONE 'UTC')",
+        'UTC_TIMESTAMP()': "(NOW() AT TIME ZONE 'UTC')",
+        '\'null\'': 'NULL',
+        '\"null\"': 'NULL',
     };
 
     const promises: Promise<void>[] = conversion._dicTables[tableName].arrTableColumns.map(async (column: any) => {
@@ -58,8 +69,22 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
         const columnName: string = extraConfigProcessor.getColumnName(conversion, originalTableName, column.Field, false);
         let sql: string = `ALTER TABLE "${ conversion._schema }"."${ tableName }" ALTER COLUMN "${ columnName }" SET DEFAULT `;
 
-        if (sqlReservedValues[column.Default]) {
-            sql += `${ sqlReservedValues[column.Default] };`;
+        let columnDefaultUpper = column.Default;
+        if (typeof(column.Default) === 'string') {
+            columnDefaultUpper = column.Default.toUpperCase();
+        }
+
+        // Fix for null::character varying in Default Value
+        // Uncomment if not to add default value for NULL
+        /*if (sqlReservedValues[columnDefaultUpper] === 'NULL') {
+            const successMsg: string = `\t--[${ logTitle }] Without default value for "${ conversion._schema }"."${ tableName }"."${ columnName }"...`;
+            log(conversion, successMsg, conversion._dicTables[tableName].tableLogPath);
+
+            return;
+        }*/
+
+        if (sqlReservedValues[columnDefaultUpper]) {
+            sql += `${ sqlReservedValues[columnDefaultUpper] };`;
         } else if (pgSqlNumericTypes.indexOf(pgSqlDataType) === -1) {
             sql += `'${ column.Default }';`;
         } else {

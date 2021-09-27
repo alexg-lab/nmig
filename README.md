@@ -4,6 +4,37 @@
 <p>NMIG is an app, intended to make a process of migration
 from MySQL to PostgreSQL as easy and smooth as possible.</p>
 
+----------------------------------
+
+Forked from https://github.com/AnatolyUss/nmig
+
+----------------------------------
+
+<h3>Differences between this fork and the original:</h3>
+
+<h4>v 5.6.0:</h4>
+
+</h5>Release Notes:</h5>
+
+</h5>Features:</h5>
+<ul>
+<li>Migrate only schema (config option, for do not run DataPipeManager, DataPoolManager and BinaryDataDecored)</li>
+<li>Mysql to Postgree partial text/varchar indexes support (config option)</li>
+<li>After migrate sqls (config option)</li>
+</ul>
+
+</h5>Fixes:</h5>
+<ul>
+<li>Renamed config.json to config.json.example</li>
+<li>Added config.json to .gitignore</li>
+<li>Functions in lowercase for default values were not considered</li>
+<li>Parentheses for mysql functions for default values were not considered</li>
+<li>Index name with index number prefix for duplicate names only</li>
+<li>Fix for null::character varying in Default Value. But this modification is commented, if necessary, uncomment in DefaultProcessor.ts (see comment: Fix for null:: character variety...)</li>
+</ul>
+
+----------------------------------
+
 <h3>KEY FEATURES</h3>
 <ul>
 <li> Precise migration of the database structure - NMIG converts
@@ -109,7 +140,7 @@ Or, if you have moved <code>config</code> folder out from Nmig's directory:<br /
 <br /><b>Note:</b> "logs_directory" will be created during script execution.</p>
 
 <h3>VERSION</h3>
-<p>Current version is 5.5.0<br />
+<p>Current version is 5.6.0<br />
 
 <h3>LICENSE</h3>
 <p>NMIG is available under "GNU GENERAL PUBLIC LICENSE" (v. 3) <br />

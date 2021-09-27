@@ -73,6 +73,8 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
         };
     });
 
+    let createdIndexes = new Array();
+
     const addIndexPromises: Promise<void>[] = Object.keys(objPgIndices).map(async (index: string) => {
         let sqlAddIndex: string = '';
 
@@ -81,12 +83,46 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
             sqlAddIndex = `ALTER TABLE "${ conversion._schema }"."${ tableName }" 
                 ADD PRIMARY KEY(${ objPgIndices[index].column_name.join(',') });`;
         } else {
+            // OLD STYLE
             // "schema_idxname_{integer}_idx" - is NOT a mistake.
-            const columnName: string = objPgIndices[index].column_name[0].slice(1, -1) + cnt++;
+            // https://github.com/AnatolyUss/nmig/issues/39
+            //const columnName: string = objPgIndices[index].column_name[0].slice(1, -1) + cnt++;
+
+            // NEW STYLE
+            let cntPrefix = 1;
+            let columnName: string = objPgIndices[index].column_name[0].slice(1, -1);
+            while (createdIndexes.length && createdIndexes.indexOf(columnName) !== -1) {
+                columnName = objPgIndices[index].column_name[0].slice(1, -1) + "_" + cntPrefix;
+                cntPrefix++;
+            }
+            createdIndexes.push(columnName);
+
+            // find in partial indexes
+            let columns = objPgIndices[index].column_name;
+            if (conversion._partialIndexes && conversion._partialIndexes.hasOwnProperty(index)) {
+                let partialIdxColumns = conversion._partialIndexes[index];
+                let colName;
+                for (let i = 0; i < columns.length; i++) {
+                    colName = columns[i];
+                    if (colName.charAt(0) === "\"" && colName.charAt(colName.length-1) === "\"") {
+                        colName = colName.substring(1, colName.length-1);
+                    }
+
+                    if (partialIdxColumns.hasOwnProperty(colName)) {
+                        const length = partialIdxColumns[colName];
+                        columns[i] = `"left"(${colName}, ${length})`;
+                    }
+                }
+            }
+
             indexType = 'index';
-            sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX "${ conversion._schema }_${ tableName }_${ columnName }_idx" 
+
+            // old index naming
+            //sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX "${ conversion._schema }_${ tableName }_${ columnName }_idx"
+
+            sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX "${ tableName }_${ columnName }_idx" 
             ON "${ conversion._schema }"."${ tableName }" 
-            ${ objPgIndices[index].index_type } (${ objPgIndices[index].column_name.join(',') });`;
+            ${ objPgIndices[index].index_type } (${ columns.join(',') });`;
         }
 
         params.vendor = DBVendors.PG;

@@ -86,6 +86,10 @@ const dataPoolProcessed = (conversion: Conversion): boolean => {
  */
 export default (conversion: Conversion): Promise<Conversion> => {
     return new Promise<Conversion>(resolve => {
+        if (conversion._migrateOnlySchema) {
+            return resolve(conversion);
+        }
+
         if (dataPoolProcessed(conversion)) {
             return resolve(conversion);
         }
