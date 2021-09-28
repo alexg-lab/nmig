@@ -1,16 +1,16 @@
 {
-    "README" : [
+    "README": [
         "This JSON document represents the main configuration options.",
         "Please, be mindful, read each option's description before setting its value."
     ],
 
-    "source_description" : [
+    "source_description": [
         "Connection parameters to your MySQL database",
         "Please ensure, that you have defined all parameters properly.",
         "Ensure, that details like 'charset' are included (if necessary).",
         "Notice, any parameter, acceptable by the node mysql module can be placed here."
     ],
-    "source" : {
+    "source": {
         "host"             : "localhost",
         "port"             : 3306,
         "database"         : "test_db",
@@ -20,13 +20,13 @@
         "password"         : "0123456789"
     },
 
-    "target_description" : [
+    "target_description": [
         "Connection parameters to your PostgreSQL database",
         "Please ensure, that you have defined all parameters properly.",
         "Ensure, that details like 'charset' are included (if necessary).",
         "Notice, any parameter, acceptable by the node pg module can be placed here."
     ],
-    "target" : {
+    "target": {
         "host"     : "localhost",
         "port"     : 5432,
         "database" : "test_db",
@@ -35,21 +35,21 @@
         "password" : "0123456789"
     },
 
-    "max_each_db_connection_pool_size_description" : [
+    "max_each_db_connection_pool_size_description": [
         "Maximal amount of simultaneous connections to your MySQL and PostgreSQL servers each.",
         "Example: 20 means, that Nmig will create a pool of 20 connections to the source MySQL server",
         "and 20 connections to the target PostgreSQL server.",
         "40 connections to both servers."
     ],
-    "max_each_db_connection_pool_size" : 20,
+    "max_each_db_connection_pool_size": 20,
 
-    "loader_max_old_space_size_description" : [
+    "loader_max_old_space_size_description": [
         "V8 memory limit of the loader process.",
         "Possible values are:",
         "1. any number, representing memory limit (in MB).",
         "2. 'DEFAULT', representing V8 default memory limit for your current hardware."
     ],
-    "loader_max_old_space_size" : "DEFAULT",
+    "loader_max_old_space_size": "DEFAULT",
 
     "streams_high_water_mark_description": [
         "Buffer level when stream.write() starts returning false.",
@@ -57,17 +57,17 @@
     ],
     "streams_high_water_mark": 16384,
 
-    "encoding_description" : [
+    "encoding_description": [
         "JavaScript encoding type.",
         "If not supplied, then utf8 will be used as a default."
     ],
-    "encoding" : "utf8",
+    "encoding": "utf8",
 
-    "schema_description" : [
+    "schema_description": [
         "A name of the schema, that will contain all migrated tables.",
         "If not supplied, then a new schema will be created automatically."
     ],
-    "schema" : "public",
+    "schema": "public",
 
     "exclude_tables_description": [
         "List (Array) of tables, that will not be migrated.",
@@ -81,40 +81,63 @@
     ],
     "include_tables": [],
 
-    "migrate_only_data_description" : [
+    "migrate_only_data_description": [
         "In order to skip schema migration, and just migrate data into a preset tables",
         " - set this parameter true."
     ],
-    "migrate_only_data" : false,
+    "migrate_only_data": false,
 
-    "migrate_only_schema_description" : [
+    "migrate_only_schema_description": [
         "In order to skip data migration, and migrate only schema",
         " - set this parameter true."
     ],
-    "migrate_only_schema" : false,
+    "migrate_only_schema": false,
 
-    "delimiter_description" : [
+    "delimiter_description": [
         "Specifies the character, that separates columns within each record.",
         "This must be a single one-byte character.",
         "The default is comma."
     ],
-    "delimiter" : ",",
+    "delimiter": ",",
 
-    "enable_extra_config_description" : [
+    "enable_extra_config_description": [
         "In order to enable the additional configuration options, placed at extra_config.json",
         " - set this parameter true."
     ],
-    "enable_extra_config" : false,
+    "enable_extra_config": false,
 
-    "partial_indexes_description" : [
-        "Specifies the list of partial indexes to convert mysql mysql_some_index_name(column1, column2(100), column3), to postgree : idx_name(column1, left(column2, 100), column3).",
-        "You must specify a table name and only fields for the partial index, you do not need to list all fields of the composite index",
+    "set_column_default_null_description": [
+        "Set DEFAULT NULL to columns (for add null::character varying / null::number / etc in Default Values)"
+    ],
+    "set_column_default_null": false
+
+    "generate_index_names_description": [
+        "Generate index names programmatically (set to true), or autogenerate by postgree (set to false)"
+    ],
+    "generate_index_names": false,
+
+    "use_original_index_names_description": [
+        "Use original index names without generate programmatically or autogenerate by postgree"
+    ],
+    "use_original_index_names": false,
+
+    "partial_indexes_description": [
+        "Specifies the list of partial indexes to convert mysql mysql_some_index_name(column1, column2(100), column3), to postgree: idx_name(column1, left(column2, 100), column3).",
+        "You must specify a index name and only fields for the partial index, you do not need to list all fields of the composite index",
         "Example: \"partial_indexes\": {\"settings_key_value_idx\": {\"key\", \"value\": 50}, {\"mysql_some_index_name\": {\"column2\": 100}}}"
     ],
-    "partial_indexes" : {
+    "partial_indexes": {
     },
 
-    "after_migrate_sqls_description" : [
+    "manual_index_names_description": [
+        "Specifies the list of mysql index name - postgree index name,
+        "Can be used to rename a specific long index name that postgree automatically cuts (64 symbols limit for index names)",
+        "Example: \"manual_index_names\": {\"some_mysql_idx\": \"some_pgsql_idx\", \"some_other_mysql_idx\": \"some_other_pgsql_idx\"},
+    ],
+    "manual_index_names": {
+    },
+
+    "after_migrate_sqls_description": [
         "Specify the list of sql to run after the migration is complete"
     ],
     "after_migrate_sqls": [

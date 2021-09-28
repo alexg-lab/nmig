@@ -55,7 +55,7 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
     }
 
     const objPgIndices: any = Object.create(null);
-    let cnt: number = 0;
+    //let cnt: number = 0;
     let indexType: string = '';
 
     showIndexResult.data.forEach((index: any) => {
@@ -73,7 +73,7 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
         };
     });
 
-    let createdIndexes = new Array();
+    let createdIndexes: string[];
 
     const addIndexPromises: Promise<void>[] = Object.keys(objPgIndices).map(async (index: string) => {
         let sqlAddIndex: string = '';
@@ -83,21 +83,34 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
             sqlAddIndex = `ALTER TABLE "${ conversion._schema }"."${ tableName }" 
                 ADD PRIMARY KEY(${ objPgIndices[index].column_name.join(',') });`;
         } else {
+            let idxName = '';
+
+            /*
             // OLD STYLE
             // "schema_idxname_{integer}_idx" - is NOT a mistake.
             // https://github.com/AnatolyUss/nmig/issues/39
-            //const columnName: string = objPgIndices[index].column_name[0].slice(1, -1) + cnt++;
+            const columnName: string = objPgIndices[index].column_name[0].slice(1, -1) + cnt++;
+            */
 
-            // NEW STYLE
-            let cntPrefix = 1;
-            let columnName: string = objPgIndices[index].column_name[0].slice(1, -1);
-            while (createdIndexes.length && createdIndexes.indexOf(columnName) !== -1) {
-                columnName = objPgIndices[index].column_name[0].slice(1, -1) + "_" + cntPrefix;
-                cntPrefix++;
+            if (conversion._manual_index_names.hasOwnProperty(index)) {
+                // Load manual index name
+                idxName = conversion._manual_index_names[index];
+            } else if (conversion._use_original_index_names) {
+                idxName = index;
+            } else if (conversion._generate_index_names) {
+                // Cnt suffix only for duplicate names
+                let cntSuffix = 1;
+                let columnName: string = objPgIndices[index].column_name[0].slice(1, -1);
+                while (createdIndexes.length && createdIndexes.indexOf(columnName) !== -1) {
+                    columnName = objPgIndices[index].column_name[0].slice(1, -1) + "_" + cntSuffix;
+                    cntSuffix++;
+                }
+                createdIndexes.push(columnName);
+
+                idxName = `${ tableName }_${ columnName }_idx`;
             }
-            createdIndexes.push(columnName);
 
-            // find in partial indexes
+            // Find in partial indexes
             let columns = objPgIndices[index].column_name;
             if (conversion._partialIndexes && conversion._partialIndexes.hasOwnProperty(index)) {
                 let partialIdxColumns = conversion._partialIndexes[index];
@@ -117,11 +130,12 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
 
             indexType = 'index';
 
-            // old index naming
-            //sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX "${ conversion._schema }_${ tableName }_${ columnName }_idx"
+            // old index names with public_
+            //sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX ${ conversion._schema }_${idxName}
 
-            sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX "${ tableName }_${ columnName }_idx" 
-            ON "${ conversion._schema }"."${ tableName }" 
+            // Autonaming if idxName is not specified
+            sqlAddIndex = `CREATE ${ (objPgIndices[index].is_unique ? 'UNIQUE ' : '') }INDEX ${idxName}
+            ON "${ conversion._schema }"."${ tableName }"
             ${ objPgIndices[index].index_type } (${ columns.join(',') });`;
         }
 
