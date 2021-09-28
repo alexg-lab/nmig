@@ -60,8 +60,8 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
         'UTC_DATE()': "(CURRENT_DATE AT TIME ZONE 'UTC')",
         'UTC_TIME()': "(CURRENT_TIME AT TIME ZONE 'UTC')",
         'UTC_TIMESTAMP()': "(NOW() AT TIME ZONE 'UTC')",
-        '\'null\'': 'NULL',
-        '\"null\"': 'NULL',
+        //'\'null\'': 'NULL',
+        //'"null"': 'NULL',
     };
 
     const promises: Promise<void>[] = conversion._dicTables[tableName].arrTableColumns.map(async (column: any) => {
@@ -74,9 +74,17 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
             columnDefaultUpper = column.Default.toUpperCase();
         }
 
-        // Fix for null::character varying in Default Value
-        // Uncomment if not to add default value for NULL
-        /*if (sqlReservedValues[columnDefaultUpper] === 'NULL') {
+        // Fix for null::character varying / null::number / etc in Default Values
+        // Do not add default NULL
+        if (!conversion._set_column_default_null && column.Default === null) {
+            const successMsg: string = `\t--[${ logTitle }] Without default value for "${ conversion._schema }"."${ tableName }"."${ columnName }"...`;
+            log(conversion, successMsg, conversion._dicTables[tableName].tableLogPath);
+
+            return;
+        }
+
+        // Do not add default NULL only for NOT NULL columns
+        /*if (!conversion._set_column_default_null && column.Null.toLowerCase() === 'no' && column.Default === null) {
             const successMsg: string = `\t--[${ logTitle }] Without default value for "${ conversion._schema }"."${ tableName }"."${ columnName }"...`;
             log(conversion, successMsg, conversion._dicTables[tableName].tableLogPath);
 

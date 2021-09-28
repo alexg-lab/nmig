@@ -75,6 +75,9 @@ export default class Conversion {
      */
     public readonly _migrateOnlyData: boolean;
 
+    /**
+     * To skip data migration, and migrate only schema
+     */
     public readonly _migrateOnlySchema: boolean;
 
     /**
@@ -215,6 +218,26 @@ export default class Conversion {
     public readonly _after_migrate_sqls: string[];
 
     /**
+     * Generate index names programmatically (set to true), or autogenerate by postgree (set to false)
+     */
+    public readonly _generate_index_names: boolean;
+
+    /**
+     * Set DEFAULT NULL to columns (for add null::character varying / null::number / etc in Default Values)
+     */
+    public readonly _set_column_default_null: boolean;
+
+    /**
+     * Specifies the list of mysql index name - postgree index name
+     */
+    public readonly _manual_index_names: any;
+
+    /**
+     * Specifies the list of mysql index name - postgree index name
+     */
+    public readonly _use_original_index_names: any;
+
+    /**
      * Constructor.
      */
     public constructor(config: any) {
@@ -263,6 +286,10 @@ export default class Conversion {
             : ',';
         this._partialIndexes = this._config.partial_indexes === undefined ? null : this._config.partial_indexes;
         this._after_migrate_sqls = this._config.after_migrate_sqls === undefined ? [] : this._config.after_migrate_sqls;
+        this._generate_index_names = this._config.generate_index_names === undefined ? false : this._config.generate_index_names;
+        this._set_column_default_null = this._config.set_column_default_null === undefined ? false : this._config.set_column_default_null;
+        this._manual_index_names = this._config.manual_index_names === undefined ? {} : this._config.manual_index_names;
+        this._use_original_index_names = this._config.use_original_index_names === undefined ? {} : this._config.use_original_index_names;
     }
 
     /**

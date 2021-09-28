@@ -12,10 +12,18 @@ Forked from https://github.com/AnatolyUss/nmig
 
 <h3>Differences between this fork and the original:</h3>
 
-<h4>v 5.6.0:</h4>
-
+<h4>v 5.6.1:</h4>
 </h5>Release Notes:</h5>
+<ul>
+<li>Set DEFAULT NULL to columns (for add null::character varying / null::number / etc in Default Values) (set_column_default_null config option)</li>
+<li>Use original index names without generate programmatically or autogenerate by postgree (set_column_default_null config option)</li>
+<li>Generate index names programmatically, or autogenerate by postgree (generate_index_names config option)</li>
+<li>Specifies the list of mysql index name - postgree index name. Can be used to rename a specific long index name that postgree automatically cuts (64 symbols limit for index names) (manual_index_names config option)</li>
+</ul>
 
+<h4>v 5.6.0:</h4>
+</h5>Release Notes:</h5>
+<br>
 </h5>Features:</h5>
 <ul>
 <li>Migrate only schema (config option, for do not run DataPipeManager, DataPoolManager and BinaryDataDecored)</li>
