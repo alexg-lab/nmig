@@ -31,7 +31,7 @@ import * as extraConfigProcessor from './ExtraConfigProcessor';
  * This conversion performs in accordance to mapping rules in './config/data_types_map.json'.
  * './config/data_types_map.json' can be customized.
  */
-export const mapDataTypes = (objDataTypesMap: any, mySqlDataType: string): string => {
+export const mapDataTypes = (conversion: Conversion, objDataTypesMap: any, mySqlDataType: string): string => {
     let retVal: string = '';
     const arrDataTypeDetails: string[] = mySqlDataType.split(' ');
     mySqlDataType = arrDataTypeDetails[0].toLowerCase();
@@ -68,6 +68,15 @@ export const mapDataTypes = (objDataTypesMap: any, mySqlDataType: string): strin
         retVal = 'character varying(1)';
     }
 
+    if (conversion._use_timestamp_0_instead_timestamp && retVal === 'timestamp') {
+        retVal = 'timestamp(0)';
+    }
+
+    if (conversion._use_text_instead_varchar &&
+        (retVal.indexOf('varchar') !== -1 || retVal.indexOf('character varying') !== -1)) {
+        retVal = 'text';
+    }
+
     return retVal;
 };
 
@@ -102,7 +111,7 @@ export const createTable = async (conversion: Conversion, tableName: string): Pr
     const columnsDefinition: string = columns.data
         .map((column: any) => {
             const colName: string = extraConfigProcessor.getColumnName(conversion, originalTableName, column.Field, false);
-            const colType: string = mapDataTypes(conversion._dataTypesMap, column.Type);
+            const colType: string = mapDataTypes(conversion, conversion._dataTypesMap, column.Type);
             return `"${ colName }" ${ colType }`;
         })
         .join(',');

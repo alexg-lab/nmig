@@ -121,6 +121,16 @@
     ],
     "use_original_index_names": false,
 
+    "use_timestamp_0_instead_timestamp_description": [
+        "Use timestamp(0) instead timestamp() for column type"
+    ],
+    "use_timestamp_0_instead_timestamp": false,
+
+    "use_text_instead_varchar_description": [
+        "Use text instead varchar/varchar(n) for column type"
+    ],
+    "use_text_instead_varchar": false,
+
     "partial_indexes_description": [
         "Specifies the list of partial indexes to convert mysql mysql_some_index_name(column1, column2(100), column3), to postgree: idx_name(column1, left(column2, 100), column3).",
         "You must specify a index name and only fields for the partial index, you do not need to list all fields of the composite index",

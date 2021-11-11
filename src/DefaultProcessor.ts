@@ -55,6 +55,7 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
         'CURRENT_DATE()': 'CURRENT_DATE',
         'CURRENT_TIME()': 'CURRENT_TIME',
         'CURRENT_TIMESTAMP()': 'CURRENT_TIMESTAMP',
+        'CURRENT_TIMESTAMP(3)': 'CURRENT_TIMESTAMP(3)',
         'LOCALTIME()': 'LOCALTIME',
         'LOCALTIMESTAMP()': 'LOCALTIMESTAMP',
         'UTC_DATE()': "(CURRENT_DATE AT TIME ZONE 'UTC')",
@@ -65,7 +66,7 @@ export default async (conversion: Conversion, tableName: string): Promise<void> 
     };
 
     const promises: Promise<void>[] = conversion._dicTables[tableName].arrTableColumns.map(async (column: any) => {
-        const pgSqlDataType: string = mapDataTypes(conversion._dataTypesMap, column.Type);
+        const pgSqlDataType: string = mapDataTypes(conversion, conversion._dataTypesMap, column.Type);
         const columnName: string = extraConfigProcessor.getColumnName(conversion, originalTableName, column.Field, false);
         let sql: string = `ALTER TABLE "${ conversion._schema }"."${ tableName }" ALTER COLUMN "${ columnName }" SET DEFAULT `;
 

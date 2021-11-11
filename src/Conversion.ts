@@ -235,7 +235,17 @@ export default class Conversion {
     /**
      * Specifies the list of mysql index name - postgree index name
      */
-    public readonly _use_original_index_names: any;
+    public readonly _use_original_index_names: boolean;
+
+    /**
+     * Use timestamp(0) instead timestamp() for column type
+     */
+    public readonly _use_timestamp_0_instead_timestamp: boolean;
+
+    /**
+     * Use text instead varchar/varchar(n) for column type
+     */
+    public readonly _use_text_instead_varchar: boolean;
 
     /**
      * Constructor.
@@ -289,7 +299,9 @@ export default class Conversion {
         this._generate_index_names = this._config.generate_index_names === undefined ? false : this._config.generate_index_names;
         this._set_column_default_null = this._config.set_column_default_null === undefined ? false : this._config.set_column_default_null;
         this._manual_index_names = this._config.manual_index_names === undefined ? {} : this._config.manual_index_names;
-        this._use_original_index_names = this._config.use_original_index_names === undefined ? {} : this._config.use_original_index_names;
+        this._use_original_index_names = this._config.use_original_index_names === undefined ? false : this._config.use_original_index_names;
+        this._use_timestamp_0_instead_timestamp = this._config.use_timestamp_0_instead_timestamp === undefined ? false : this._config.use_timestamp_0_instead_timestamp;
+        this._use_text_instead_varchar = this._config.use_text_instead_varchar === undefined ? false : this._config.use_text_instead_varchar;
     }
 
     /**

@@ -12,6 +12,14 @@ Forked from https://github.com/AnatolyUss/nmig
 
 <h3>Differences between this fork and the original:</h3>
 
+<h4>v 5.6.2:</h4>
+</h5>Release Notes:</h5>
+<ul>
+<li>Use timestamp(0) instead timestamp() for column type (use_timestamp_0_instead_timestamp: boolean; config option)</li>
+<li>Use text instead varchar/varchar(n) for column type (use_text_instead_varchar: boolean; config option)</li>
+<li>Use timestamp(3) instead timestamp() for column type</li>
+</ul>
+
 <h4>v 5.6.1:</h4>
 </h5>Release Notes:</h5>
 <ul>
@@ -19,6 +27,8 @@ Forked from https://github.com/AnatolyUss/nmig
 <li>Use original index names without generate programmatically or autogenerate by postgree (set_column_default_null config option)</li>
 <li>Generate index names programmatically, or autogenerate by postgree (generate_index_names config option)</li>
 <li>Specifies the list of mysql index name - postgree index name. Can be used to rename a specific long index name that postgree automatically cuts (64 symbols limit for index names) (manual_index_names config option)</li>
+<li>Do not set DEFAULT NULL to columns without specified default value in mysql (set_column_default_null: boolean; config option)</li>
+<li>Use manual, original or generate index name (manual_index_names, use_original_index_names, generate_index_names config options). If options use_original_index_names and generate_index_names options is disabled, Postgree auto generate standard index name. You can override the names of certain indices using an option (for example, for too long names of indices which exceed 64 characters and will be truncated for a more readable naming)</li>
 </ul>
 
 <h4>v 5.6.0:</h4>
